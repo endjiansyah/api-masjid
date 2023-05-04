@@ -15,7 +15,8 @@ return new class extends Migration
             $table->id();
             $table->integer("id_masjid");
             $table->string("title");
-            $table->string("slug");
+            $table->string("mime");
+            $table->string("slug")->nullable();
             $table->string("link");
             $table->timestamps();
         });
