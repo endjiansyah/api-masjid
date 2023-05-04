@@ -5,9 +5,11 @@ namespace App\Http\Controllers;
 use App\Models\Masjid;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use App\Http\Controllers\MediaController;
 
 class MasjidController extends Controller
 {
+
     function index()
     {
         $masjid = Masjid::query()->get();
@@ -18,24 +20,30 @@ class MasjidController extends Controller
             "data" => $masjid
         ]);
     }
+
     function show($id)
     {
         $masjid = Masjid::query()
             ->where("id", $id)
             ->first();
 
+        $media = new MediaController;
+        $getMedia = $media->MediaMasjidbyID($id);
+
         if (!isset($masjid)) {
             return response()->json([
                 "status" => false,
                 "message" => "masjid with id ".$id." not found",
-                "data" => null
+                "data" => null,
+                
             ]);
         }
 
         return response()->json([
             "status" => true,
             "message" => "masjid with id ".$id,
-            "data" => $masjid
+            "data" => $masjid,
+            "media" => $getMedia
         ]);
     }
 
