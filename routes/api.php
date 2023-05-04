@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\MasjidController;
+use App\Http\Controllers\MediaController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -23,3 +24,5 @@ Route::get("/masjid/{id}", [MasjidController::class, "show"]);
 Route::post("/masjid", [MasjidController::class, "store"]);
 Route::post("/masjid/update/{id}", [MasjidController::class, "update"]);
 Route::post("/masjid/delete/{id}", [MasjidController::class, "destroy"]);
+
+Route::get("/media/{id}", [MediaController::class, "show"]);

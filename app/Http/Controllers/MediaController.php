@@ -18,5 +18,14 @@ class MediaController extends Controller
         return $data;
     }
 
-    
+    function show($id)
+    {
+        $media = Media::query()->where("id",$id)->first();
+
+        return response()->json([
+            "status" => true,
+            "message" => "media with id ".$id,
+            "data" => $media
+        ]);
+    }
 }
