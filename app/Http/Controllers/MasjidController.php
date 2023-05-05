@@ -206,14 +206,10 @@ class MasjidController extends Controller
         $listmedia = [];
         
         $media = new MediaController;
-        $media = $media->MediaMasjidbyID($id);
+        $getmedia = $media->MediaMasjidbyID($id);
 
-        foreach($media as $data){
-            $med = Media::query()->where("id", $data->id)->first();
-            $mediapath = str_replace($request->getSchemeAndHttpHost(), '', $data->link);
-            $media = public_path($mediapath);
-            unlink($media);
-            $med->delete();
+        foreach($getmedia as $data){
+            $med = $media->Destroymedia($request,$data->id,true);
             $listmedia[] = $med;
 
         }

@@ -69,4 +69,31 @@ class MediaController extends Controller
             "data" => $media
         ]);
     }
+
+    function Destroymedia(Request $request,$idmedia,$check=null)
+    {
+        $media = Media::query()->where("id", $idmedia)->first();
+        if (!isset($media)) {
+            return response()->json([
+                "status" => false,
+                "message" => "data not found",
+                "data" => null
+            ]);
+        }
+
+            $mediapath = str_replace($request->getSchemeAndHttpHost(), '', $media->link);
+            $mediadel = public_path($mediapath);
+            unlink($mediadel);
+            $media->delete();
+
+            if($check){
+                return $media;
+            }
+
+        return response()->json([
+            "status" => true,
+            "message" => "data delete successfully",
+            "data" => $media
+        ]);
+    }
 }

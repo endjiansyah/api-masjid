@@ -27,3 +27,4 @@ Route::post("/masjid/delete/{id}", [MasjidController::class, "destroy"]);
 
 Route::get("/media/{id}", [MediaController::class, "show"]);
 Route::post("/media", [MediaController::class, "store"]);
+Route::post("/media/delete/{id}", [MediaController::class, "Destroymedia"]);
