@@ -14,9 +14,8 @@ return new class extends Migration
         Schema::create('media', function (Blueprint $table) {
             $table->id();
             $table->integer("id_masjid");
-            $table->string("title");
+            $table->string("name");
             $table->string("mime");
-            $table->string("slug")->nullable();
             $table->string("link");
             $table->timestamps();
         });

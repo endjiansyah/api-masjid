@@ -6,6 +6,7 @@ use App\Models\Masjid;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\MediaController;
+use App\Models\Media;
 
 class MasjidController extends Controller
 {
@@ -39,11 +40,12 @@ class MasjidController extends Controller
             ]);
         }
 
+        $masjid['media'] = $getMedia;
+
         return response()->json([
             "status" => true,
             "message" => "masjid with id ".$id,
             "data" => $masjid,
-            "media" => $getMedia
         ]);
     }
 
@@ -78,7 +80,31 @@ class MasjidController extends Controller
                 ]);
             }
         }
+
         $masjid = Masjid::query()->create($payload);
+
+        $responsemedia = [];
+        $files = $request->file('media');
+        foreach ($files as $file) {
+            $mime = $file->getClientMimeType();
+            $mimetype = explode("/",$mime);
+            if($mimetype[0] == "image"||$mimetype[0] == "video"){
+                $filename = $file->hashName();
+                $file->move("media/".$mimetype[0]."/", $filename);
+                $path = $request->getSchemeAndHttpHost() . "/media/".$mimetype[0]."/" . $filename;
+                $payloadmedia = [
+                    "link" => $path,
+                    "mime" => $mimetype[0],
+                    "name" => $filename,
+                    "id_masjid" => $masjid->id
+                ];
+                $media = Media::query()->create($payloadmedia);
+                $responsemedia[]=$media;
+
+            }
+        }
+
+        $masjid["media"] = $responsemedia;
 
         return response()->json([
             "status" => true,
@@ -164,7 +190,7 @@ class MasjidController extends Controller
         ]);
     }
 
-    function destroy($id)
+    function destroy(Request $request,$id)
     {
         $masjid = Masjid::query()->where("id", $id)->first();
         if (!isset($masjid)) {
@@ -176,6 +202,22 @@ class MasjidController extends Controller
         }
 
         $masjid->delete();
+
+        $listmedia = [];
+        
+        $media = new MediaController;
+        $media = $media->MediaMasjidbyID($id);
+
+        foreach($media as $data){
+            $med = Media::query()->where("id", $data->id)->first();
+            $mediapath = str_replace($request->getSchemeAndHttpHost(), '', $data->link);
+            $media = public_path($mediapath);
+            unlink($media);
+            $med->delete();
+            $listmedia[] = $med;
+
+        }
+        $masjid["media"] = $listmedia;
     
         return response()->json([
             "status" => true,

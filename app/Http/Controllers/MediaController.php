@@ -12,11 +12,7 @@ class MediaController extends Controller
     {
         $media = Media::query()->where("id_masjid",$id)->get();
 
-        $data = [
-            "data" => $media
-        ];
-
-        return $data;
+        return $media;
     }
 
     function show($id)
@@ -35,7 +31,6 @@ class MediaController extends Controller
         $payload = request()->all();
         $validator = Validator::make($payload, [
             "id_masjid" => 'required',
-            "title" => 'required',
             "media" => 'required'
         ]);
 
@@ -51,7 +46,7 @@ class MediaController extends Controller
 
         $mime = $file->getClientMimeType();
             $mimetype = explode("/",$mime);
-            if($mimetype[0] != "image"&& $mimetype[0] != "video"&& $mimetype[0] != "audio"){
+            if($mimetype[0] != "image"&& $mimetype[0] != "video"){
                 return response()->json([
                     "status" => false,
                     "message" => "media blocked ",
@@ -61,7 +56,9 @@ class MediaController extends Controller
                 $filename = $file->hashName();
                 $file->move("media/".$mimetype[0]."/", $filename);
                 $path = $request->getSchemeAndHttpHost() . "/media/".$mimetype[0]."/" . $filename;
+                
                 $payload['link'] = $path;
+                $payload['name'] = $filename;
                 $payload['mime'] = $mimetype[0];
 
                 $media = Media::query()->create($payload);
